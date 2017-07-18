@@ -1,73 +1,57 @@
 package milestone2;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.bind.DatatypeConverter;
 
 public class Server2 {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
 		
-		//Servidor
-		ServerSocket servidor = new ServerSocket(3030);
+		ServerSocket server = new ServerSocket(3030);
 		
-		System.out.println("Servidor ouvindo localhost:3030");
+		System.out.println("Servidor rodando em localhost:3030");
 		
-		System.out.println("Aguardando conex�o");
-		//Cliente
-		Socket cliente = servidor.accept();
+		Socket client = server.accept();
 		
-		System.out.println(cliente.getInetAddress().getHostAddress());
+		System.out.println("Cliente conectado");
 		
-		InputStream input = cliente.getInputStream();
-		BufferedReader br = new BufferedReader(new InputStreamReader(input));
+		InputStream in = client.getInputStream();
+		OutputStream out = client.getOutputStream();
 		
-		String request = br.readLine();
-		String[] requestParam = request.split(" ");
+		String data = new Scanner(in, "UTF-8").useDelimiter("\\r\\n\\r\\n").next();
 		
+		Matcher get = Pattern.compile("^GET").matcher(data);
 		
-		String path = requestParam[1];
-		
-		PrintWriter out = new PrintWriter(cliente.getOutputStream(), true);
-
-		File file = new File("src/milestone2/" + path);
-		
-		System.out.println(requestParam[0] + " " + file.getPath() + " HTTP/1.1");
-		
-		String response = "";
-		
-		if (!file.exists()) {
-			response = "HTTP/1.1 404 Not Found";
-			//out.println(response);
-		}
-		
-		else {
-			FileReader fr = new FileReader(file);
-			BufferedReader bfr = new BufferedReader(fr);
-			String line;
-
-			response += ("Method: " + requestParam[0]) + "\n";
-			response += "HTTP/1.1 200 OK\n";
-			response += "BODY:\n";
+		if (get.find()) {
 			
-			while ((line = bfr.readLine()) != null) {
-				//out.write(line);
-				//out.println(line);
-				response += line + "\n";
-				//out.flush();
-			}
-			bfr.close();
-		
+			Matcher match = Pattern.compile("Sec-WebSocket-Key: (.*)").matcher(data);
+			
+			match.find();
+			
+			byte[] response = ("HTTP/1.1 101 Switching Protocols\r\n"
+					+ "Connection: Upgrade\r\n"
+					+ "Upgrade: websocket\r\n"
+					+ "Sec-WebSocket-Accept: "
+					+ DatatypeConverter
+					.printBase64Binary(
+							MessageDigest
+							.getInstance("SHA-1")
+							.digest((match.group(1) + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")
+									.getBytes("UTF-8")))
+					+ "\r\n\r\n")
+					.getBytes("UTF-8");
+			
+			out.write(response, 0, response.length);
 		}
-		System.out.println(file.getAbsolutePath());
-		out.println(response);
-		br.close();
-		out.close();
 	}
 }
