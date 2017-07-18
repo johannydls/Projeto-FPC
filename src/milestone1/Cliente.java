@@ -15,7 +15,7 @@ public class Cliente {
 		
 		Socket socket = new Socket("localhost", 2525);
 		
-		System.out.println("Conex„o estabelecida!\n");
+		System.out.println("Conex√£o estabelecida!\n");
 		
 		InputStream input = socket.getInputStream();
 		OutputStream output = socket.getOutputStream();
@@ -25,7 +25,7 @@ public class Cliente {
 		
 		Scanner scanner = new Scanner(System.in);
 		
-		System.out.print("RequisiÁ„o: ");
+		System.out.print("Requisi√ß√£o: ");
 		String mensagem = scanner.nextLine();
 
 		out.println(mensagem);
