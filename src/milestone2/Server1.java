@@ -15,6 +15,7 @@ public class Server1 {
 	public static void main(String[] args) throws IOException {
 		
 		//Servidor
+		@SuppressWarnings("resource")
 		ServerSocket servidor = new ServerSocket(3030);
 		
 		System.out.println("Servidor ouvindo localhost:3030");
