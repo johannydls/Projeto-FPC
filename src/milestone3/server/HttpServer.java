@@ -14,11 +14,12 @@ public class HttpServer {
 		ServerSocket server_socket;
 		
 		try {
-			command = String.valueOf(args[1]);
+			command = String.valueOf(args[0]);
 	
-			port = Integer.parseInt(args[0]);
+			port = Integer.parseInt(args[1]);
 		} catch (Exception e) {
 			port = 5555;
+			command = "start";
 		}
 		
 		
