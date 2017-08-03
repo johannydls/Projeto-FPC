@@ -27,15 +27,18 @@ public class HttpServer {
 			try {
 				if(command.equals("start")){
 					server_socket = new ServerSocket(port);
-					System.out.println("HttpServer running on port "
-									+ server_socket.getLocalPort());
+					System.out.println("\n===== Servidor FPC rodando na porta "
+									+ server_socket.getLocalPort()
+									+ " =====\n\n");
 					
 					while(true) {
-						System.out.println("=============================================");
+						
 						Socket socket = server_socket.accept();
-						System.out.println("New connection accepted "
-								+ socket.getInetAddress() + ":" + socket.getPort());
-						System.out.println("=============================================\n");
+						System.out.println("=================================================\n"
+								+ "Nova conexão aceita "
+								+ socket.getInetAddress() + ":" + socket.getPort()
+								+ "\n=================================================\n");
+						
 						try {
 							
 							HttpRequestHandler request = new HttpRequestHandler(socket);

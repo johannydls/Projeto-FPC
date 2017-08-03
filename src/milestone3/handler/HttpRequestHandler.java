@@ -124,7 +124,7 @@ public class HttpRequestHandler implements Runnable {
 				output.write(connectionLine.getBytes());
 				System.out.print(connectionLine);
 				
-				//Envia a linha em branco para indicar o fim do cabe�alho
+				//Envia a linha em branco para indicar o fim do cabeçalho
 				output.write(CRLF.getBytes());
 				System.out.print(CRLF);
 				
@@ -154,7 +154,7 @@ public class HttpRequestHandler implements Runnable {
 	}
 
 	/**
-	 * Fun��o para retornar o tipo do arquivo
+	 * Função para retornar o tipo do arquivo
 	 * @param fileName
 	 * @return o nome do tipo do arquivo
 	 */
