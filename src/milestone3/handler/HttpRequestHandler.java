@@ -15,7 +15,7 @@ public class HttpRequestHandler implements Runnable {
 	
 	final static String CRLF = "\r\n";
 	
-	Socket socket;
+	final Socket socket;
 	InputStream input;
 	OutputStream output;
 	BufferedReader bufferedReader;
@@ -40,9 +40,11 @@ public class HttpRequestHandler implements Runnable {
 	
 	private void processRequest() throws IOException {
 		
-		while(true) {
+		String headerLine = null;
+		
+		while((headerLine = bufferedReader.readLine()) != null){
 			
-			String headerLine = bufferedReader.readLine();
+			//String headerLine = bufferedReader.readLine();
 			System.out.println(headerLine);
 			
 			if (headerLine.equals(CRLF) || headerLine.equals("")) {
