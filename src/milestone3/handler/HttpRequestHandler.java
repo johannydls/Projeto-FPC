@@ -31,8 +31,11 @@ public class HttpRequestHandler implements Runnable {
 	@Override
 	public void run() {
 		try {
+			System.out.println(Thread.currentThread() + " iniciada");
 			processRequest();
+			System.out.println(Thread.currentThread() + " finalizada.");
 		} catch (IOException e) {
+			System.out.println(Thread.currentThread() + " com exceção!");
 			System.out.println(e);
 		}
 	}
@@ -43,10 +46,7 @@ public class HttpRequestHandler implements Runnable {
 		String headerLine = null;
 		
 		while((headerLine = bufferedReader.readLine()) != null){
-			
-			//String headerLine = bufferedReader.readLine();
-			System.out.println(headerLine);
-			
+
 			if (headerLine.equals(CRLF) || headerLine.equals("")) {
 				break;
 			}
@@ -61,13 +61,15 @@ public class HttpRequestHandler implements Runnable {
 				fileName = "." + fileName;
 				
 				FileInputStream fileInput = null;
-				boolean fileExists = true;
+				boolean fileExists = false;
 				
 				try {
 					if (fileName.equals(".")) {
 						fileInput = new FileInputStream("files/index.html");
+						fileExists = true;
 					} else {
 						fileInput = new FileInputStream("files/" + fileName);
+						fileExists = true;
 					}
 					
 				} catch (FileNotFoundException e) {
@@ -79,7 +81,7 @@ public class HttpRequestHandler implements Runnable {
 				String statusLine = null;
 				String contentTypeLine = null;
 				String entityBody = null;
-				String contentLengthLine = "error";
+				//String contentLengthLine = null;
 				String connectionLine = null;
 				
 				if (fileExists) {
@@ -87,19 +89,24 @@ public class HttpRequestHandler implements Runnable {
 					statusLine = "HTTP/1.1 200 OK" + CRLF;
 					dateLine = "Date: " + new Date().toString() + CRLF;
 					contentTypeLine = "Content-Type: " + contentType(fileName) + CRLF;
-					contentLengthLine = "Content-Length: " + (new Integer(fileInput.available())).toString() + CRLF;
+					//contentLengthLine = "Content-Length: " + fileInput. + CRLF;
 					connectionLine = "Connection: Closed" + CRLF;
 					
 				} else {
 					
-					statusLine = "HTTP/1.1 404 Not Found" + CRLF;
-					contentTypeLine = "Content-Type: text/html" + CRLF;
-					
-					entityBody = "<html>"
+					entityBody = "<!DOCTYPE html><html>"
 							+ "<head><title>404 Not Found</title></head>"
 							+ "<body><h1>404 Not Found</h1>"
 							+ "<br>Uso: http://localhost:port/"
 							+ "fileName.html</body></html>";
+					
+					statusLine = "HTTP/1.1 404 Not Found" + CRLF;
+					dateLine = "Date: " + new Date().toString() + CRLF;
+					contentTypeLine = "Content-Type: text/html" + CRLF;
+					//contentLengthLine = "Content-Length: " + entityBody.length() + CRLF;
+					connectionLine = "Connection: Closed" + CRLF;
+					
+					
 				}
 				
 				//Envia a linha de status
@@ -115,8 +122,8 @@ public class HttpRequestHandler implements Runnable {
 				System.out.print(serverLine);
 				
 				//Envia o Content-Length
-				output.write(contentLengthLine.getBytes());
-				System.out.print(contentLengthLine);
+				//output.write(contentLengthLine.getBytes());
+				//System.out.print(contentLengthLine);
 				
 				//Envia a linha do tipo de conteudo
 				output.write(contentTypeLine.getBytes());
@@ -139,7 +146,6 @@ public class HttpRequestHandler implements Runnable {
 				} else {
 					
 					output.write(entityBody.getBytes());
-					System.out.println(entityBody);
 				}
 				
 			}
