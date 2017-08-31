@@ -1,8 +1,8 @@
 package milestone3.handler;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,12 +31,12 @@ public class HttpRequestHandler implements Runnable {
 	@Override
 	public void run() {
 		try {
-			System.out.println(Thread.currentThread() + " iniciada");
+			//System.out.println(Thread.currentThread() + " iniciada");
 			processRequest();
-			System.out.println(Thread.currentThread() + " finalizada.");
+			//System.out.println(Thread.currentThread() + " finalizada.");
 		} catch (IOException e) {
-			System.out.println(Thread.currentThread() + " com exceção!");
-			System.out.println(e);
+			//System.out.println(Thread.currentThread() + " com exceção!");
+			//System.out.println(e);
 		}
 	}
 
@@ -58,39 +58,35 @@ public class HttpRequestHandler implements Runnable {
 			if (temp.equals("GET")) {
 				
 				String fileName = s.nextToken();
-				fileName = "." + fileName;
 				
-				FileInputStream fileInput = null;
-				boolean fileExists = false;
-				
-				try {
-					if (fileName.equals(".")) {
-						fileInput = new FileInputStream("files/index.html");
-						fileExists = true;
-					} else {
-						fileInput = new FileInputStream("files/" + fileName);
-						fileExists = true;
-					}
-					
-				} catch (FileNotFoundException e) {
-					fileExists = false;
+				if (fileName.startsWith("/")) {
+					fileName = fileName.substring(1);
 				}
 				
+				if (fileName.equals("")) {
+					fileName = "index.html";
+				}
+				
+				File file = new File("files/" + fileName);
+				FileInputStream fileInput = null;
+
 				String serverLine = "Server: Servidor Web FPC" + CRLF;
 				String dateLine = null;
 				String statusLine = null;
 				String contentTypeLine = null;
 				String entityBody = null;
-				//String contentLengthLine = null;
+				String contentLengthLine = null;
 				String connectionLine = null;
 				
-				if (fileExists) {
+				if (file.exists()) {
+					
+					fileInput = new FileInputStream(file);
 					
 					statusLine = "HTTP/1.1 200 OK" + CRLF;
 					dateLine = "Date: " + new Date().toString() + CRLF;
 					contentTypeLine = "Content-Type: " + contentType(fileName) + CRLF;
-					//contentLengthLine = "Content-Length: " + fileInput. + CRLF;
-					connectionLine = "Connection: Closed" + CRLF;
+					contentLengthLine = "Content-Length: " + String.valueOf(fileInput.available()) + CRLF;
+					connectionLine = "Connection: Keep-Alive" + CRLF;
 					
 				} else {
 					
@@ -103,7 +99,7 @@ public class HttpRequestHandler implements Runnable {
 					statusLine = "HTTP/1.1 404 Not Found" + CRLF;
 					dateLine = "Date: " + new Date().toString() + CRLF;
 					contentTypeLine = "Content-Type: text/html" + CRLF;
-					//contentLengthLine = "Content-Length: " + entityBody.length() + CRLF;
+					contentLengthLine = "Content-Length: " + entityBody.length() + CRLF;
 					connectionLine = "Connection: Closed" + CRLF;
 					
 					
@@ -123,7 +119,7 @@ public class HttpRequestHandler implements Runnable {
 				
 				//Envia o Content-Length
 				//output.write(contentLengthLine.getBytes());
-				//System.out.print(contentLengthLine);
+				System.out.print(contentLengthLine);
 				
 				//Envia a linha do tipo de conteudo
 				output.write(contentTypeLine.getBytes());
@@ -138,7 +134,7 @@ public class HttpRequestHandler implements Runnable {
 				System.out.print(CRLF);
 				
 				//Envia o corpo do arquivo
-				if (fileExists) {
+				if (file.exists()) {
 					
 					sendBytes(fileInput, output);
 					fileInput.close();

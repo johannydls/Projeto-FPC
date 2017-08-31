@@ -19,7 +19,7 @@ rm -rf temp/
 
 if [ -e http-server-fpc.jar ];
 then
-	echo "Construct worked!"
+	echo "Executavel .jar gerado com sucesso!"
 else
-	echo "Error!"
+	echo "Erro na compilacao!"
 fi

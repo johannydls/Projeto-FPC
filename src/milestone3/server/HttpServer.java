@@ -52,12 +52,7 @@ public class HttpServer {
 						
 						HttpRequestHandler request = new HttpRequestHandler(socket);
 						
-						threadPool.execute(request);
-						
-						//Thread thread = new Thread(request);
-						
-						//thread.start();
-						
+						threadPool.execute(request);					
 						
 					} catch (Exception e) {
 						e.printStackTrace();
