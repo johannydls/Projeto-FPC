@@ -1,7 +1,0 @@
-java.net.BindException: Endereço já em uso (Bind failed)
-	at java.net.PlainSocketImpl.socketBind(Native Method)
-	at java.net.AbstractPlainSocketImpl.bind(AbstractPlainSocketImpl.java:387)
-	at java.net.ServerSocket.bind(ServerSocket.java:375)
-	at java.net.ServerSocket.<init>(ServerSocket.java:237)
-	at java.net.ServerSocket.<init>(ServerSocket.java:128)
-	at milestone3.server.HttpServer.main(HttpServer.java:36)
